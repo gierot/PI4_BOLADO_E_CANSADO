@@ -6,22 +6,22 @@
     <div class="operations-center font-avenir">
       <div style="display:flex; justify-content:center; align-items:center">
         <div style="width:100%; display: block;">
-          <!--
-            <div v-for="sensor in sensores" :key="sensor">
-              {{sensor.name}}
-            </div>
-          -->
-          <input type="submit" @click="choiceSensor()" class="font-avenir sensores">
-          <input @change="choiceSensor()" class="font-avenir sensores">
-          <input @change="choiceSensor()" class="font-avenir sensores">
-          <input @change="choiceSensor()" class="font-avenir sensores">
-          <input @change="choiceSensor()" class="font-avenir sensores">
+          <button type="submit" @click="choiceSensor(1)" class="font-avenir sensores">Umidade e Temp.</button>
+          <button type="submit" @click="choiceSensor(2)" class="font-avenir sensores">Leitor-rfid</button>
+          <button type="submit" @click="choiceSensor(3)" class="font-avenir sensores">Infravermelho</button>
+          <button type="submit" @click="choiceSensor(4)" class="font-avenir sensores">Sensor de fumaça</button>
+          <button type="submit" @click="choiceSensor(5)" class="font-avenir sensores">Sensor de tensão</button>
         </div>
       </div>
     </div>
     <div class="informations_and_actions font-avenir">
       <div id="grafic">
-        <div class="center_object" id="" style="width:100%;height:100%; font-size:80px">10</div>
+        <div 
+          class="center_object" 
+          style="width:100%; height:100%; font-size:80px"
+        >
+          10
+        </div>
         <div class="center_object" id="last_data">
           <p style="border-bottom:2px solid black">
             teste
@@ -29,11 +29,14 @@
         </div>
       </div>
       <div id="description_and_action">
-        <div class="blocks">
-          teste
+        <div class="blocks" style="margin:0 8px">
+          <img v-if="sensor.image" 
+            style="background-size:cover; width:100%; height: 100%; border-radius:10px" 
+            :src="sensor.image"
+          >
         </div>
         <div class="blocks" id="description">
-          {{all_components}}
+          {{sensor.description}}
         </div>
       </div>
     </div>
@@ -46,38 +49,67 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      sensores: [],
-      options: {},
-      all_components: {}
+      header: {
+        'Authorization': 'Bearer my-token',
+        'Access-Control-Allow-Credentials': true,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS, DELETE, POST, PUTCH',
+        'Access-Control-Allow-Headers': 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+      }, 
+      sensor: {
+        image: '',
+        alt: '',
+        description:''
+      },
+      style_image:'',
     }
   },
   methods: {
     captureValues() {
-      axios.get('https://api.hgbrasil.com/weather', {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          }
-      }).then(res => {
+      let data = {
+        username: 'gierot',
+        password: '12345678'
+      }
+      axios.post('http://localhost:5000/user/create', data,{headers: this.header})
+      axios.get('http://localhost:5000/user', { headers: this.header } )
+      .then(res => {
         console.log(res);
       })
     },
-    choiceSensor() {
-       console.log('hoje é domingo')
+    choiceSensor(param) {
+      this.sensor.image = this.choiceImage(param)
+      this.sensor.description = this.choiceDescription(param)
     },
-    loadComponents() {
-      axios.get('').then((response) => {
-        this.all_components = response.data
-      })
+    choiceDescription(param) {
+      switch(param) {
+        case 1:
+          return 'A umidade representa a quantidade de água em forma de vapor presente na atmosfera. Em geral, quanto mais úmida está uma determinada localidade, menores são as variações de temperatura, pois a água possui a propriedade de receber e armazenar o calor por ela recebido.'
+        case 2:
+          return 'Um leitor de RFID, às vezes também chamado de “interrogador”, lê os dados armazenados em uma etiqueta de RFID e os repassa a um computador para processamento. Um leitor é essencialmente uma caixinha de componentes eletrônicos conectada a uma ou mais antenas.'
+        case 3:
+          return 'O infravermelho é um tipo de radiação eletromagnética que apresenta frequência menor que a da luz vermelha e, por isso, não está dentro do espectro eletromagnético visível. Por esse motivo, essa radiação não pode ser percebida pelo olho humano.'
+        case 4:
+          return 'Os detectores de fumaça são dispositivos que identificam quando há presença sinal de fumaça no ambiente desde seu estágio inicial e transferem esta informação para a central de detecção de incêndio que é responsável pela ativação dos alarmes da edificação.'
+        case 5:
+          return 'O Sensor de Tensão AC 0 a 250V Voltímetro ZMPT101K é um módulo que permite identificar a presença de tensão alternada. Devido à sua alta precisão, é possível utilizá-lo como um medidor, garantindo assim ótimas leituras dos valores de tensão alternada em sua rede elétrica.'
+      }
     },
-    getSensores() {
-      axios.get('').then((response) => {
-        this.sensores = response.data
-      })
-    }
+    choiceImage(param) {
+      switch (param) {
+        case 1:
+          return '/images/umidade.gif'
+        case 2:
+          return '/images/aproximacao.jpg'
+        case 3:
+          return '/images/infravermelho.jpg'
+        case 4:
+          return '/images/2h8251c.webp'
+        case 5:
+          return '/images/tensao.jpg'
+      }
+    },
   },
   mounted() {
-    this.captureValues()
-    this.loadComponents()
   }
 }
 </script>
@@ -91,13 +123,20 @@ export default {
   position: relative;
 }
 
+#style_all_images{
+  width:100%;
+  background-size: cover;
+  padding: 80px 100px ;
+}
+
 .sensores {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  color: white;
   float: left;
   margin: 32px;
   font-size: 28px;
   font-weight: bold;
+  border-radius:10px;
+  border:none;
 }
 .center_object{
   display: flex;
