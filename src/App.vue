@@ -1,42 +1,51 @@
 <template>
-  <div class="title_page font-avenir" name="title_page">
-    Os vascainos
-  </div>
-  <div class="father-of-all height-100">
-    <div class="operations-center font-avenir">
-      <div style="display:flex; justify-content:center; align-items:center">
-        <div style="width:100%; display: block;">
-          <button type="submit" @click="choiceSensor(1)" class="font-avenir sensores">Umidade e Temp.</button>
-          <button type="submit" @click="choiceSensor(2)" class="font-avenir sensores">Leitor-rfid</button>
-          <button type="submit" @click="choiceSensor(3)" class="font-avenir sensores">Infravermelho</button>
-          <button type="submit" @click="choiceSensor(4)" class="font-avenir sensores">Sensor de fumaça</button>
-          <button type="submit" @click="choiceSensor(5)" class="font-avenir sensores">Sensor de tensão</button>
-        </div>
-      </div>
+  <loginComponent v-if="0 > 1" class="h-full"/>
+  <div v-else>
+    <div 
+      class="text-white bg-neutral-800 text-center py-8 text-2xl font-semibold" 
+      name="title_page"
+      >
+        Os vascainos
     </div>
-    <div class="informations_and_actions font-avenir">
-      <div id="grafic">
-        <div 
-          class="center_object" 
-          style="width:100%; height:100%; font-size:80px"
-        >
-          10
-        </div>
-        <div class="center_object" id="last_data">
-          <p style="border-bottom:2px solid black">
-            teste
-          </p>
+    <div class="w-full absolute inline-flex h-full">
+      <div class="w-96 bg-red-900 font-avenir">
+        <div class="flex justify-center items-center">
+          <div class="w-full block text-center">
+            <button type="submit" @click="choiceSensor(1)" class="text-white font-semibold text-2xl mx-16 my-8">Umidade e Temp.</button>
+            <button type="submit" @click="choiceSensor(2)" class="text-white font-semibold text-2xl mx-16 my-8">Leitor-rfid</button>
+            <button type="submit" @click="choiceSensor(3)" class="text-white font-semibold text-2xl mx-16 my-8">Infravermelho</button>
+            <button type="submit" @click="choiceSensor(4)" class="text-white font-semibold text-2xl mx-16 my-8">Sensor de fumaça</button>
+            <button type="submit" @click="choiceSensor(5)" class="text-white font-semibold text-2xl mx-16 my-8">Sensor de tensão</button>
+          </div>
         </div>
       </div>
-      <div id="description_and_action">
-        <div class="blocks" style="margin:0 8px">
-          <img v-if="sensor.image" 
-            style="background-size:cover; width:100%; height: 100%; border-radius:10px" 
-            :src="sensor.image"
-          >
+      <div class="bg-black block w-full">
+        <div class="w-full flex mt-8 justify-center items-center">
+          <div class="rounded-lg h-64 w-9/12 inline-flex">
+            <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
+              <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
+                <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
+                  <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                    10
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-full rounded-l-lg text-white text-center flex justify-center items-center">este</div>
+          </div>
         </div>
-        <div class="blocks" id="description">
-          {{sensor.description}}
+
+        <div class="w-full flex mt-8 justify-center items-center">
+          <div class="inline-flex h-64 w-9/12">
+            <div class="w-full mx-2 rounded flex justify-center items-center">
+              <div v-if="sensor.image ">
+                <img id="style_all_images" :src="sensor.image" class="w-full h-full">
+              </div>
+            </div>
+            <div class="w-full mx-5 rounded text-white flex justify-center items-center text-center font-semibold">
+              {{sensor.description}}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -45,8 +54,12 @@
 
 <script>
 import axios from 'axios';
+import loginComponent from './components/loginComponent.vue';
 
 export default {
+  components: {
+    loginComponent
+  },
   data() {
     return {
       header: {
@@ -115,127 +128,8 @@ export default {
 </script>
 
 <style>
-
-.visualization-components {
-  height: 100%;
-  display: inline-flexbox;
-  background-color: white;
-  position: relative;
-}
-
-#style_all_images{
-  width:100%;
+#style_all_images {
+  width: 100%;
   background-size: cover;
-  padding: 80px 100px ;
-}
-
-.sensores {
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  float: left;
-  margin: 32px;
-  font-size: 28px;
-  font-weight: bold;
-  border-radius:10px;
-  border:none;
-}
-.center_object{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.title_page {
-  width: 100%;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  font-size: 20px;
-  background-color: #3C3C3C;
-  padding: 30px;
-  color: white;
-}
-
-.informations_and_actions {
-  height: 100%;
-  width: 100%;
-  display: block;
-  justify-content: center;
-}
-
-.father-of-all {
-  display: inline-flex;
-  position: absolute;
-  width: 100%;
-}
-.operations-center {
-  background-color: #451531;
-  height: 100%;
-  width: 30%;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-}
-
-.font-avenir {font-family: Avenir, Helvetica, Arial, sans-serif;}
-.position-absolute {position: absolute;}
-.jus-con-cen {justify-content: center;}
-.height-100 {height: 100%;}
-.margin-0 {margin: 0;}
-
-.blocks {
-  text-align: center;
-  width: 100%;
-  height: 300px;
-}
-
-#last_data{
-  width:100%;
-  height:100%;
-  border:1px solid black;
-  border-radius: 10px;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  border-top: 0;
-  border-bottom: 0;
-  border-right:0;
-}
-
-#chartdiv {
-  display: inline-flex;
-  width: 100%;
-  height: 400px;
-}
-
-#description {
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-
-#description_and_action {
-  display: inline-flex;
-  justify-content: center;
-  width: 100%;
-  justify-content: center;
-  height:200px;
-}
-
-#grafic {
-  display: inline-flex;
-  width: 100%;
-  border-radius: 10px;
-  text-align: center;
-  height: 300px;
-  margin: 20px 5px;
-  border: 1px solid;
-}
-
-#box_actions {
-  padding: 60px 40px;
-  border-radius: 5px;
-  border: 1px solid black;
 }
 </style>
