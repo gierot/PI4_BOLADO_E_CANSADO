@@ -1,11 +1,14 @@
 <template>
-  <loginComponent v-if="0 > 1" class="h-full"/>
+  <loginComponent v-if="!has_login" class="h-full"/>
+  <registerComponent v-else-if="new_user"/>
   <div v-else>
     <div 
-      class="text-white bg-neutral-800 text-center py-8 text-2xl font-semibold" 
+      class="text-white bg-neutral-800 flex justify-center items-center text-center py-8 text-2xl font-semibold" 
       name="title_page"
       >
-        Os vascainos
+        <hr size="10" width="30%" noshade>
+        <p class="mx-5">Os vascainos</p>
+        <hr size="10" width="30%" noshade>
     </div>
     <div class="w-full absolute inline-flex h-full">
       <div class="w-96 bg-red-900 font-avenir">
@@ -19,7 +22,13 @@
           </div>
         </div>
       </div>
-      <div class="bg-black block w-full">
+      <div 
+        v-if="value_choice === 0" 
+        class="bg-black w-full h-full text-center italic text-white flex justify-center items-center text-4xl"
+        v-text="'Por favor, escolha um sensor para averiguar seus valores...'">
+
+      </div>
+      <div v-else class="bg-black block w-full">
         <div class="w-full flex mt-8 justify-center items-center">
           <div class="rounded-lg h-64 w-9/12 inline-flex">
             <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
@@ -55,20 +64,18 @@
 <script>
 import axios from 'axios';
 import loginComponent from './components/loginComponent.vue';
+import registerComponent from './components/registerComponent.vue'
 
 export default {
   components: {
-    loginComponent
+    loginComponent,
+    registerComponent
   },
   data() {
     return {
-      header: {
-        'Authorization': 'Bearer my-token',
-        'Access-Control-Allow-Credentials': true,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS, DELETE, POST, PUTCH',
-        'Access-Control-Allow-Headers': 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-      }, 
+      has_login: false,
+      new_user: false,
+      value_choice:0,
       sensor: {
         image: '',
         alt: '',
@@ -90,6 +97,7 @@ export default {
       })
     },
     choiceSensor(param) {
+      this.value_choice = param
       this.sensor.image = this.choiceImage(param)
       this.sensor.description = this.choiceDescription(param)
     },
@@ -120,7 +128,7 @@ export default {
         case 5:
           return '/images/tensao.jpg'
       }
-    },
+    }
   },
   mounted() {
   }
@@ -132,4 +140,6 @@ export default {
   width: 100%;
   background-size: cover;
 }
+
+
 </style>
