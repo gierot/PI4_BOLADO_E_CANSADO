@@ -1,58 +1,207 @@
 <template>
-  <loginComponent v-if="!has_login" class="h-full"/>
-  <registerComponent v-else-if="new_user"/>
-  <div v-else>
+  <div class="w-full h-full">
     <div 
-      class="text-white bg-neutral-800 flex justify-center items-center text-center py-8 text-2xl font-semibold" 
-      name="title_page"
-      >
-        <hr size="10" width="30%" noshade>
-        <p class="mx-5">Os vascainos</p>
-        <hr size="10" width="30%" noshade>
+      v-if="!choice" 
+      class="h-screen flex items-center justify-center"
+    >
+        <div class="w-full flex justify-center items-center">
+          <div class="block px-4 py-8">
+            <p 
+              class="text-center text-white w-full text-2xl my-4" 
+              v-text="'Os vascainos'" 
+            />
+            <div class=" w-full inline-flex justify-center items-center">
+              <button
+                v-text="'Entrar'"
+                class="rounded text-white bg-violet-900 py-2 mx-1 px-8 font-semibold"
+                @click="choiceMetod(1)"
+              />
+              <button 
+                v-text="'Registre-se'" 
+                class="rounded text-white bg-green-900 py-2 mx-1 px-4 font-semibold" 
+                @click="choiceMetod(2)" 
+              />
+            </div>
+          </div>
+        </div>
     </div>
-    <div class="w-full absolute inline-flex h-full">
-      <div class="w-96 bg-red-900 font-avenir">
-        <div class="flex justify-center items-center">
-          <div class="w-full block text-center">
-            <button type="submit" @click="choiceSensor(1)" class="text-white font-semibold text-2xl mx-16 my-8">Umidade e Temp.</button>
-            <button type="submit" @click="choiceSensor(2)" class="text-white font-semibold text-2xl mx-16 my-8">Leitor-rfid</button>
-            <button type="submit" @click="choiceSensor(3)" class="text-white font-semibold text-2xl mx-16 my-8">Infravermelho</button>
-            <button type="submit" @click="choiceSensor(4)" class="text-white font-semibold text-2xl mx-16 my-8">Sensor de fumaça</button>
-            <button type="submit" @click="choiceSensor(5)" class="text-white font-semibold text-2xl mx-16 my-8">Sensor de tensão</button>
+    <div v-else-if="choice === 1">
+      <div class="w-full h-screen flex justify-center items-center">
+        <div class="block w-1/4 h-96 flex justify-center items-center rounded bg-neutral-900">
+          <div class="block">
+            <div class="w-full">
+              <p 
+                class="text-violet-900 font-semibold my-2 text-center text-xl" 
+                v-text="'Login'"
+              />
+              <div class="w-full flex items-center justify-center mb-4">
+                <input 
+                  class="rounded text-center no-underline" 
+                  v-model="user.username" 
+                  type="text"
+                >
+              </div>
+            </div>
+            <div class="w-full ">
+              <p 
+                class="text-violet-900 font-semibold text-center my-2 text-xl" 
+                v-text="'Senha'"
+              />
+              <div class="flex items-center justify-center mb-4">
+                <input 
+                  class="rounded text-center no-underline" 
+                  v-model="user.password" 
+                  type="password"
+                >
+              </div>
+            </div>
+            <div class="w-full block">
+              <div class="inline-flex items-center w-full justify-center">
+                <button 
+                  v-text="'Entrar'" 
+                  class="rounded bg-violet-900 py-2 mx-1 px-9 text-white font-semibold"
+                  @click="registerUser(2)" 
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div 
-        v-if="value_choice === 0" 
-        class="bg-black w-full h-full text-center italic text-white flex justify-center items-center text-4xl"
-        v-text="'Por favor, escolha um sensor para averiguar seus valores...'">
-
+    </div>
+    <div 
+      v-else-if="choice === 2"
+      class="w-full h-screen flex justify-center items-center" 
+    >
+    <div class="flex items-center w-1/4 rounded bg-neutral-900 h-96 justify-center">
+      <div class="block">
+          <div class="w-full my-2 text-center text-white" v-if="info">{{info}}</div>
+          <p 
+            class="text-center w-full text-white mb-8 italic text-2xl" 
+            v-text="'Cadastro'" 
+          />
+          <p 
+            class="w-full text-center text-white" 
+            v-text="'Nome'" 
+          />
+          <div class="w-full flex justify-center items-center">
+            <input 
+              v-model="register.name" 
+              class="m-2 px-4 text-center rounded" 
+              type="text"
+            >
+          </div>
+          <p class="w-full text-center text-white" v-text="'Email'" />
+          <div class="w-full flex justify-center items-center">
+            <input 
+              v-model="register.email" 
+              class="m-2 px-4 text-center rounded" 
+              type="text"
+            >
+          </div>
+          <p class="w-full text-center text-white" v-text="'Login'" />
+          <div class="w-full flex justify-center items-center">
+            <input 
+              v-model="register.login" 
+              class="m-2 px-4 text-center rounded" 
+              type="text"
+            >
+          </div>
+          <p class="w-full text-center text-white" v-text="'Senha'" />
+          <div class="w-full flex justify-center items-center">
+            <input 
+              v-model="register.password" 
+              class="m-2 px-4 text-center rounded" 
+              type="password"
+            >
+          </div>
+          <div class="w-full flex justify-center items-center">
+            <button
+              v-text="'Registrar'"
+              class="rounded text-white bg-violet-900 p-2" 
+              @click="registerUser(1)"
+            />
+          </div>
+        </div>
       </div>
-      <div v-else class="bg-black block w-full">
-        <div class="w-full flex mt-8 justify-center items-center">
-          <div class="rounded-lg h-64 w-9/12 inline-flex">
-            <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
-              <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
-                <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
-                  <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
-                    10
+    </div>
+    <div v-else>
+      <div 
+        class="text-white bg-neutral-800 flex justify-center items-center text-center py-8 text-2xl font-semibold" 
+        name="title_page"
+        >
+          <hr size="10" width="30%" noshade>
+          <p class="mx-5">Os vascainos</p>
+          <hr size="10" width="30%" noshade>
+      </div>
+      <div class="w-full absolute inline-flex h-full">
+        <div class="w-96 h-screen bg-red-900 font-avenir">
+          <div class="flex justify-center items-center">
+            <div class="w-full block text-center">
+              <button 
+                type="submit" 
+                @click="choiceSensor(1), getValues()" 
+                class="text-white font-semibold text-2xl mx-16 my-8"
+                v-text="'Umidade e Temp.'"
+              />
+              <button 
+                type="submit" 
+                @click="choiceSensor(2)" 
+                class="text-white font-semibold text-2xl mx-16 my-8"
+                v-text="'Leitor-rfid'"
+              />
+              <button 
+                type="submit" 
+                @click="choiceSensor(3)" 
+                class="text-white font-semibold text-2xl mx-16 my-8"
+                v-text="'Infravermelho'"
+              />
+              <button 
+                type="submit" 
+                @click="choiceSensor(4)" 
+                class="text-white font-semibold text-2xl mx-16 my-8"
+                v-text="'Sensor de fumaça'"
+              />
+              <button 
+                type="submit" 
+                @click="choiceSensor(5)" 
+                class="text-white font-semibold text-2xl mx-16 my-8"
+                v-text="'Sensor de tensão'"
+              />
+            </div>
+          </div>
+        </div>
+        <div 
+          v-if="value_choice === 0" 
+          class="bg-black w-full h-full text-center italic text-white flex justify-center items-center text-4xl"
+          v-text="'Por favor, escolha um sensor para averiguar seus valores...'">
+  
+        </div>
+        <div v-else class="bg-black block w-full">
+          <div class="w-full flex mt-8 justify-center items-center">
+            <div class="rounded-lg h-64 w-9/12 inline-flex">
+              <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
+                <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
+                  <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
+                    <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                      {{int}}
+                    </div>
                   </div>
                 </div>
               </div>
+              <div class="w-full rounded-l-lg text-white text-center flex justify-center items-center">este</div>
             </div>
-            <div class="w-full rounded-l-lg text-white text-center flex justify-center items-center">este</div>
           </div>
-        </div>
-
-        <div class="w-full flex mt-8 justify-center items-center">
-          <div class="inline-flex h-64 w-9/12">
-            <div class="w-full mx-2 rounded flex justify-center items-center">
-              <div v-if="sensor.image ">
-                <img id="style_all_images" :src="sensor.image" class="w-full h-full">
+  
+          <div class="w-full flex mt-8 justify-center items-center">
+            <div class="inline-flex h-64 w-9/12">
+              <div class="w-full mx-2 rounded flex justify-center items-center">
+                <div v-if="sensor.image ">
+                  <img id="style_all_images" :src="sensor.image" class="w-full h-full">
+                </div>
               </div>
-            </div>
-            <div class="w-full mx-5 rounded text-white flex justify-center items-center text-center font-semibold">
-              {{sensor.description}}
+              <div class="w-full mx-5 rounded text-white flex justify-center items-center text-center font-semibold">
+                {{sensor.description}}
+              </div>
             </div>
           </div>
         </div>
@@ -62,20 +211,25 @@
 </template>
 
 <script>
-import axios from 'axios';
-import loginComponent from './components/loginComponent.vue';
-import registerComponent from './components/registerComponent.vue'
-
 export default {
-  components: {
-    loginComponent,
-    registerComponent
-  },
   data() {
     return {
+      info:false,
+      choice:false,
       has_login: false,
       new_user: false,
-      value_choice:0,
+      value_choice: 0,
+      int: 0,
+      user: {
+        name: '',
+        password:'',
+      },
+      register: {
+        name: '',
+        email: '',
+        password: '',
+        login:''
+      },
       sensor: {
         image: '',
         alt: '',
@@ -85,16 +239,42 @@ export default {
     }
   },
   methods: {
-    captureValues() {
-      let data = {
-        username: 'gierot',
-        password: '12345678'
+    choiceMetod(param) {this.choice = param},
+    captureValues(param) {
+      switch (param) {
+        case 1:
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+        case 4:
+          break;
+        case 5:
+          break;
       }
-      axios.post('http://localhost:5000/user/create', data,{headers: this.header})
-      axios.get('http://localhost:5000/user', { headers: this.header } )
-      .then(res => {
-        console.log(res);
-      })
+      
+    },
+    registerUser(param) {
+      switch (param) {
+        case 1:
+          this.$store.dispatch('registerUser', this.register)
+          .then((response) => {
+            response ? this.choice = 4 : this.info = 'Não foi possivel cadastrar o usuario, por favor tente novamente!'
+          })
+          break;
+        case 2:
+          this.$store.dispatch('verifyAccontUser', this.user)
+          .then((response) => {
+            response ? this.choice = 4 : 'Não foi possivel cadastrar o usuario, por favor tente novamente!'
+          })
+          break;
+      }
+    },
+    getValues() {
+      this.int += 1;
+      postMessage(this.int)
+      setTimeout(function () { this.getValues() }.bind(this), 5000);
     },
     choiceSensor(param) {
       this.value_choice = param
@@ -140,6 +320,4 @@ export default {
   width: 100%;
   background-size: cover;
 }
-
-
 </style>
