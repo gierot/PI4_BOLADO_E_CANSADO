@@ -37,7 +37,7 @@
               <div class="w-full flex items-center justify-center mb-4">
                 <input 
                   class="rounded text-center no-underline" 
-                  v-model="user.username" 
+                  v-model="user.login" 
                   type="text"
                 >
               </div>
@@ -50,7 +50,7 @@
               <div class="flex items-center justify-center mb-4">
                 <input 
                   class="rounded text-center no-underline" 
-                  v-model="user.password" 
+                  v-model="user.senha" 
                   type="password"
                 >
               </div>
@@ -85,7 +85,7 @@
           />
           <div class="w-full flex justify-center items-center">
             <input 
-              v-model="register.name" 
+              v-model="register.nome" 
               class="m-2 px-4 text-center rounded" 
               type="text"
             >
@@ -109,7 +109,7 @@
           <p class="w-full text-center text-white" v-text="'Senha'" />
           <div class="w-full flex justify-center items-center">
             <input 
-              v-model="register.password" 
+              v-model="register.senha" 
               class="m-2 px-4 text-center rounded" 
               type="password"
             >
@@ -139,31 +139,31 @@
             <div class="w-full block text-center">
               <button 
                 type="submit" 
-                @click="choiceSensor(1), getValues()" 
+                @click="choiceSensor(1), getValues('/temperatura-umidade')" 
                 class="text-white font-semibold text-2xl mx-16 my-8"
                 v-text="'Umidade e Temp.'"
               />
               <button 
                 type="submit" 
-                @click="choiceSensor(2)" 
+                @click="choiceSensor(2), getValues('/leitor-rfid/')" 
                 class="text-white font-semibold text-2xl mx-16 my-8"
                 v-text="'Leitor-rfid'"
               />
               <button 
                 type="submit" 
-                @click="choiceSensor(3)" 
+                @click="choiceSensor(3), getValues('/sensor-infravermelho')" 
                 class="text-white font-semibold text-2xl mx-16 my-8"
                 v-text="'Infravermelho'"
               />
               <button 
                 type="submit" 
-                @click="choiceSensor(4)" 
+                @click="choiceSensor(4), getValues('/sensor-gas')" 
                 class="text-white font-semibold text-2xl mx-16 my-8"
                 v-text="'Sensor de fumaça'"
               />
               <button 
                 type="submit" 
-                @click="choiceSensor(5)" 
+                @click="choiceSensor(5), getValues('/sensor-voltagem')" 
                 class="text-white font-semibold text-2xl mx-16 my-8"
                 v-text="'Sensor de tensão'"
               />
@@ -183,15 +183,26 @@
                 <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
                   <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
                     <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
-                      {{int}}
+                      {{ value_one }}
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="w-full rounded-l-lg text-white text-center flex justify-center items-center">este</div>
             </div>
           </div>
-  
+          <div v-if="value_two" class="w-full flex mt-8 justify-center items-center">
+            <div class="rounded-lg h-64 w-9/12 inline-flex">
+              <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
+                <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
+                  <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
+                    <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                      {{value_two}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="w-full flex mt-8 justify-center items-center">
             <div class="inline-flex h-64 w-9/12">
               <div class="w-full mx-2 rounded flex justify-center items-center">
@@ -211,6 +222,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -219,15 +231,16 @@ export default {
       has_login: false,
       new_user: false,
       value_choice: 0,
-      int: 0,
+      value_one: '',
+      value_two:'',
       user: {
-        name: '',
-        password:'',
+        login: '',
+        senha:'',
       },
       register: {
-        name: '',
+        nome: '',
         email: '',
-        password: '',
+        senha: '',
         login:''
       },
       sensor: {
@@ -240,26 +253,20 @@ export default {
   },
   methods: {
     choiceMetod(param) {this.choice = param},
-    captureValues(param) {
-      switch (param) {
-        case 1:
-          break;
-        case 2:
-          break;
-        case 3:
-          break;
-        case 4:
-          break;
-        case 5:
-          break;
+    dataprocessing(param) {
+      if (!param.temperatura) {
+        console.log(param)
+      } else {
+        this.value_one = param.temperatura
+        this.value_two = param.umidade
       }
-      
     },
     registerUser(param) {
       switch (param) {
         case 1:
           this.$store.dispatch('registerUser', this.register)
-          .then((response) => {
+            .then((response) => {
+            console.log(response)
             response ? this.choice = 4 : this.info = 'Não foi possivel cadastrar o usuario, por favor tente novamente!'
           })
           break;
@@ -271,10 +278,12 @@ export default {
           break;
       }
     },
-    getValues() {
-      this.int += 1;
-      postMessage(this.int)
-      setTimeout(function () { this.getValues() }.bind(this), 5000);
+    getValues(param) {
+      this.$store.dispatch('getSensorChoice', param)
+      .then((response) => {
+        this.dataprocessing(response)
+      })
+      param === '/leitor-rfid/' ? '' : setTimeout(function () { this.getValues(param) }.bind(this), 5000);
     },
     choiceSensor(param) {
       this.value_choice = param
@@ -311,6 +320,12 @@ export default {
     }
   },
   mounted() {
+    console.log(this.get_user)
+  },
+  created() {
+    mapGetters({
+      get_user: 'get_user'
+    })
   }
 }
 </script>
