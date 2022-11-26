@@ -27,7 +27,7 @@
     </div>
     <div v-else-if="choice === 1">
       <div class="w-full h-screen flex justify-center items-center">
-        <div class="block w-1/4 h-96 flex justify-center items-center rounded bg-neutral-900">
+        <div class="block w-[300px] h-96 flex justify-center items-center rounded bg-neutral-900">
           <div class="block">
             <div class="w-full">
               <p 
@@ -63,6 +63,7 @@
                   @click="registerUser(2)" 
                 />
               </div>
+              <p v-if="info" class="text-white w-full my-2 text-center rounded bg-red-700">{{info}}</p>
             </div>
           </div>
         </div>
@@ -72,9 +73,8 @@
       v-else-if="choice === 2"
       class="w-full h-screen flex justify-center items-center" 
     >
-    <div class="flex items-center w-1/4 rounded bg-neutral-900 h-96 justify-center">
+    <div class="flex items-center w-[320px] rounded bg-neutral-900 h-[450px] justify-center">
       <div class="block">
-          <div class="w-full my-2 text-center text-white" v-if="info">{{info}}</div>
           <p 
             class="text-center w-full text-white mb-8 italic text-2xl" 
             v-text="'Cadastro'" 
@@ -121,6 +121,7 @@
               @click="registerUser(1)"
             />
           </div>
+          <p v-if="info" class="text-white w-full my-2 text-center rounded bg-red-700">{{info}}</p>
         </div>
       </div>
     </div>
@@ -129,9 +130,14 @@
         class="text-white bg-neutral-800 flex justify-center items-center text-center py-8 text-2xl font-semibold" 
         name="title_page"
         >
-          <hr size="10" width="30%" noshade>
-          <p class="mx-5">Os vascainos</p>
-          <hr size="10" width="30%" noshade>
+          <div class="flex justify-center items-center float-right w-[90%]">
+            <hr size="10" width="30%" noshade>
+            <p class="mx-5">Os vascainos</p>
+            <hr size="10" width="30%" noshade>
+          </div>
+          <div class="w-auto float-right text-2xl">
+            <button class="text-white" type="submit" v-text="'Sair'" @click="logouUser()"/>
+          </div>
       </div>
       <div class="w-full absolute inline-flex h-full">
         <div class="w-96 h-screen bg-red-900 font-avenir">
@@ -140,33 +146,38 @@
               <button 
                 type="submit" 
                 @click="choiceSensor(1), getValues('/temperatura-umidade')" 
-                class="text-white font-semibold text-2xl mx-16 my-8"
+                class="text-white font-semibold text-2xl mx-16 my-6"
                 v-text="'Umidade e Temp.'"
               />
               <button 
                 type="submit" 
                 @click="choiceSensor(2), getValues('/leitor-rfid/')" 
-                class="text-white font-semibold text-2xl mx-16 my-8"
+                class="text-white font-semibold text-2xl mx-16 my-6"
                 v-text="'Leitor-rfid'"
               />
               <button 
                 type="submit" 
                 @click="choiceSensor(3), getValues('/sensor-infravermelho')" 
-                class="text-white font-semibold text-2xl mx-16 my-8"
+                class="text-white font-semibold text-2xl mx-16 my-6"
                 v-text="'Infravermelho'"
               />
               <button 
                 type="submit" 
                 @click="choiceSensor(4), getValues('/sensor-gas')" 
-                class="text-white font-semibold text-2xl mx-16 my-8"
+                class="text-white font-semibold text-2xl mx-16 my-6"
                 v-text="'Sensor de fumaça'"
               />
               <button 
                 type="submit" 
                 @click="choiceSensor(5), getValues('/sensor-voltagem')" 
-                class="text-white font-semibold text-2xl mx-16 my-8"
-                v-text="'Sensor de tensão'"
+                class="text-white font-semibold text-2xl mx-16 my-6"
+                v-text="'Sensor de voltagem'"
               />
+              <button 
+                type="submit" 
+                @click="choiceSensor(6), getValues('/sensor-amperagem')"
+                class="text-white font-semibold text-2xl mx-16 my-6" 
+                v-text="'Sensor de amperagem'" />
             </div>
           </div>
         </div>
@@ -177,41 +188,59 @@
   
         </div>
         <div v-else class="bg-black block w-full">
-          <div class="w-full flex mt-8 justify-center items-center">
-            <div class="rounded-lg h-64 w-9/12 inline-flex">
-              <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
-                <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
-                  <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
-                    <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
-                      {{ value_one }}
+          <div v-if="value_choice === 2">
+            <div class="h-[320px] my-4 w-full flex justify-center items-center text-white">
+              <img v-if="value_one" src="/images/escuro.gif" class="w-auto bg-cover rounded h-full">
+              <div v-else class="text-center text-white text-4xl mx-2" v-text="'...Ops parece que seu cartão não esta cadastrado... Cadastre-o e veja a mágica!!!'"/>
+            </div>
+          </div>
+          <div v-else>
+            <div class="inline-flex w-full">
+              <div class="w-full flex mt-8 justify-center items-center">
+                <div class="rounded-lg h-64 w-9/12 inline-flex">
+                  <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
+                    <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
+                      <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
+                        <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                          {{ value_one }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div v-if="value_choice === 1" class="w-full flex mt-8 justify-center items-center">
+                <div class="rounded-lg h-64 w-9/12 inline-flex">
+                  <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
+                    <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
+                      <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
+                        <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                          {{value_two}}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div v-if="value_two" class="w-full flex mt-8 justify-center items-center">
-            <div class="rounded-lg h-64 w-9/12 inline-flex">
-              <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
-                <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
-                  <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
-                    <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
-                      {{value_two}}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="w-full flex mt-8 justify-center items-center">
-            <div class="inline-flex h-64 w-9/12">
+            <div class="inline-flex h-64 w-full">
               <div class="w-full mx-2 rounded flex justify-center items-center">
-                <div v-if="sensor.image ">
-                  <img id="style_all_images" :src="sensor.image" class="w-full h-full">
+                <div class="flex justify-center items-center" v-if="sensor.image ">
+                  <img id="style_all_images" :src="sensor.image" class="w-full rounded h-full">
                 </div>
               </div>
               <div class="w-full mx-5 rounded text-white flex justify-center items-center text-center font-semibold">
-                {{sensor.description}}
+                <div class="block w-full">
+                  <p class="text-center w-full">{{sensor.description}}</p>
+                  <button 
+                    v-if="value_choice === 2 && !value_one" 
+                    class="bg-violet-800 p-2 my-2 rounded" 
+                    v-text="'Cadastrar cartão'"
+                    @click="registerCard('/cadastro/leitor-rfid')"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -222,14 +251,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       info:false,
-      choice:false,
-      has_login: false,
-      new_user: false,
+      choice:4,
       value_choice: 0,
       value_one: '',
       value_two:'',
@@ -245,38 +271,64 @@ export default {
       },
       sensor: {
         image: '',
-        alt: '',
         description:''
       },
-      style_image:'',
     }
   },
   methods: {
+    logouUser() {
+      this.choice = 0
+      this.info = ''
+    },
     choiceMetod(param) {this.choice = param},
     dataprocessing(param) {
-      if (!param.temperatura) {
-        console.log(param)
-      } else {
-        this.value_one = param.temperatura
-        this.value_two = param.umidade
+      switch (this.choice) {
+        case 1:
+          this.value_one = param.temperatura
+          this.value_two = param.umidade
+          break;
+        case 2:
+          this.value_one = param.cadastro
+          break;
+        case 3:
+          this.value_one = param.encontrado_item
+          break;
+        case 4:
+        case 5:
+        case 6:
+          this.valor_one = param.valor
+          break;
       }
     },
     registerUser(param) {
       switch (param) {
         case 1:
-          this.$store.dispatch('registerUser', this.register)
+          if (!this.register.nome || !this.register.login || !this.register.senha || !this.register.email) {
+            this.info = 'Preencha todos os dados por favor!!!!'
+          } else {
+            this.info = ''
+            this.$store.dispatch('registerUser', this.register)
             .then((response) => {
-            console.log(response)
-            response ? this.choice = 4 : this.info = 'Não foi possivel cadastrar o usuario, por favor tente novamente!'
-          })
+              console.log(response)
+              response ? this.choice = 4 : this.info = 'Não foi possivel cadastrar o usuario ' + this.register.login +', por favor tente novamente!'
+            })
+          }
           break;
-        case 2:
-          this.$store.dispatch('verifyAccontUser', this.user)
-          .then((response) => {
-            response ? this.choice = 4 : 'Não foi possivel cadastrar o usuario, por favor tente novamente!'
-          })
+          case 2:
+          if (!this.user.login || !this.user.senha ) {
+            this.info = 'Preencha todos os dados por favor!!!!'
+          } else {
+            this.info = ''
+            this.$store.dispatch('verifyAccontUser', this.user)
+            .then((response) => {
+              response ? this.choice = 4 : this.info = 'Não foi possivel logar com o usuario ' +this.user.login+ ', por favor tente novamente!'
+            })
+          }
           break;
       }
+    },
+    registerCard(param) {
+      this.$store.dispatch('registerCard', param)
     },
     getValues(param) {
       this.$store.dispatch('getSensorChoice', param)
@@ -301,7 +353,9 @@ export default {
         case 4:
           return 'Os detectores de fumaça são dispositivos que identificam quando há presença sinal de fumaça no ambiente desde seu estágio inicial e transferem esta informação para a central de detecção de incêndio que é responsável pela ativação dos alarmes da edificação.'
         case 5:
-          return 'O Sensor de Tensão AC 0 a 250V Voltímetro ZMPT101K é um módulo que permite identificar a presença de tensão alternada. Devido à sua alta precisão, é possível utilizá-lo como um medidor, garantindo assim ótimas leituras dos valores de tensão alternada em sua rede elétrica.'
+          return 'Tensão elétrica, também conhecida como diferença de potencial, é a diferença de potencial elétrico entre dois pontos ou a diferença em energia potencial elétrica por unidade de carga elétrica entre dois pontos. Sua unidade de medida é o volt – homenagem ao físico italiano Alessandro Volta.'
+        case 6:
+          return 'Este sensor é comumente aplicado em projetos de automação residencial, onde é necessário monitorar o consumo de um equipamento elétrico (dentro das especificações do sensor), por exemplo. Para isto, o mesmo deve ser aliado a um Sensor de Tensão AC de forma que seja possível fazer o cálculo de potência.'
       }
     },
     choiceImage(param) {
@@ -309,24 +363,20 @@ export default {
         case 1:
           return '/images/umidade.gif'
         case 2:
-          return '/images/aproximacao.jpg'
+          return '/images/aproximacao.gif'
         case 3:
           return '/images/infravermelho.jpg'
         case 4:
           return '/images/2h8251c.webp'
         case 5:
-          return '/images/tensao.jpg'
+          return '/images/voltagem.gif'
+        case 6:
+          return '/images/amper.gif'
       }
     }
   },
   mounted() {
-    console.log(this.get_user)
   },
-  created() {
-    mapGetters({
-      get_user: 'get_user'
-    })
-  }
 }
 </script>
 
