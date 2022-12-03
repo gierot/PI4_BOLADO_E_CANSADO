@@ -201,7 +201,7 @@
                   <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
                     <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
                       <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
-                        <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                        <div class="bg-violet-700 rounded-full text-white w-24 h-24 flex justify-center items-center">
                           {{ value_one }}
                         </div>
                       </div>
@@ -214,7 +214,7 @@
                   <div class="w-full rounded-r-lg text-white text-center flex justify-center items-center">
                     <div class="bg-violet-900 w-40 h-40 rounded-full flex justify-center items-center">
                       <div class="bg-violet-800 w-32 h-32 rounded-full flex justify-center items-center">
-                        <div class="bg-violet-700 rounded-full w-24 h-24 flex justify-center items-center text-xl">
+                        <div class="bg-violet-700 rounded-full text-white w-24 h-24 flex justify-center items-center">
                           {{value_two}}
                         </div>
                       </div>
@@ -255,10 +255,11 @@ export default {
   data() {
     return {
       info:false,
-      choice:4,
+      choice:0,
       value_choice: 0,
-      value_one: '',
-      value_two:'',
+      value_one: 0.0,
+      value_two: 0,
+      clear:0,
       user: {
         login: '',
         senha:'',
@@ -282,13 +283,13 @@ export default {
     },
     choiceMetod(param) {this.choice = param},
     dataprocessing(param) {
-      switch (this.choice) {
+      switch (this.value_choice) {
         case 1:
           this.value_one = param.temperatura
           this.value_two = param.umidade
           break;
         case 2:
-          this.value_one = param.cadastro
+          this.value_one = param.permitido
           break;
         case 3:
           this.value_one = param.encontrado_item
@@ -296,7 +297,7 @@ export default {
         case 4:
         case 5:
         case 6:
-          this.valor_one = param.valor
+          this.value_one = param.valor
           break;
       }
     },
@@ -309,7 +310,6 @@ export default {
             this.info = ''
             this.$store.dispatch('registerUser', this.register)
             .then((response) => {
-              console.log(response)
               response ? this.choice = 4 : this.info = 'Não foi possivel cadastrar o usuario ' + this.register.login +', por favor tente novamente!'
             })
           }
@@ -331,13 +331,15 @@ export default {
       this.$store.dispatch('registerCard', param)
     },
     getValues(param) {
+      clearInterval(this.clear)
       this.$store.dispatch('getSensorChoice', param)
-      .then((response) => {
+        .then((response) => {
         this.dataprocessing(response)
       })
-      param === '/leitor-rfid/' ? '' : setTimeout(function () { this.getValues(param) }.bind(this), 5000);
+      param === '/leitor-rfid/' ? '' : this.clear = setTimeout(function () { this.getValues(param) }.bind(this), 4000);
     },
     choiceSensor(param) {
+      this.value_one = null
       this.value_choice = param
       this.sensor.image = this.choiceImage(param)
       this.sensor.description = this.choiceDescription(param)

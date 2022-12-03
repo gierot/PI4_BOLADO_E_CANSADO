@@ -1,4 +1,4 @@
-const route = 'http://192.168.15.157:6969/api'
+const route = 'http://192.168.43.105:6969/api'
 import axios from 'axios'
 var retorno;
 
